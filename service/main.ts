@@ -1,36 +1,49 @@
-import Person from './person'
-// import { createServer, Server, Socket } from 'net'
-import readline from 'readline'
+import CommandService from './command'
+import NetService from './net'
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: "> "
+const command: CommandService = new CommandService();
+const net: NetService = new NetService();
+
+command.register(["quit", "exit"], () => {
+    process.exit(0);
 });
 
-rl.on("line", (line) => {
-    console.log("recv: ", line);
-    rl.prompt();
+command.register("ls", (args: string[]) => {
+
+    switch (args[1]) {
+        case "client":
+        default:
+            net.getClientList().forEach(id => {
+                command.log(id);
+            });
+        break;
+    }
 });
 
-rl.on("close", () => {
-    console.log("-closed");
+command.register("close", (args: string[]) => {
+    net.closeClient(args.slice(1));
 });
 
-console.log(new Person("Liming").sayHello());
+command.register("send", (args: string[]) => {
+    net.send(args[1], `${args.slice(2).join(" ")}\n`);
+});
 
-rl.prompt();
+net.onAccept = (id: string) => {
+    command.log(`acceptd: ${id}`);
+};
 
-// console.clear();
+net.onClose = (id: string) => {
+    command.log(`closed: ${id}`);
+}
 
-// console.log("Hello Im Daming");
+net.onRecv = (data: string | Uint8Array) => {
+    command.log(`recv: ${data}`.trim());
+}
 
-// const server: Server = createServer((socket: Socket) => {
-//     socket.end("get out");
-// }).on('error', (err) => {
-//     console.log(err);
-// });
+command.start(() => {
+    command.ready();
 
-// server.listen(9100, () => {
-//     console.log("listend 9100");
-// });
+    net.start((address, port) => {
+        command.log(`service listened: ${address} ${port}`);
+    });
+});

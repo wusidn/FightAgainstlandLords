@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/wusi/.nvm/versions/node/v14.8.0/bin/node /usr/local/bin/yarn add @types/net
+  /Users/wusi/.nvm/versions/node/v14.8.0/bin/node /usr/local/bin/yarn add uuid
 
 PATH: 
   /Users/wusi/.nvm/versions/node/v14.8.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
@@ -14,23 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fnet: Not found
-      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66987:18)
-      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140748:22)
-      at Request.emit (events.js:314:20)
-      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141720:10)
-      at Request.emit (events.js:314:20)
-      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141642:12)
-      at Object.onceWrapper (events.js:420:28)
-      at IncomingMessage.emit (events.js:326:22)
-      at endReadableNT (_stream_readable.js:1244:12)
-      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+  Error: https://registry.yarnpkg.com/uuid: ETIMEDOUT
+      at Timeout._onTimeout (/usr/local/lib/node_modules/yarn/lib/cli.js:141408:19)
+      at listOnTimeout (internal/timers.js:551:17)
+      at processTimers (internal/timers.js:494:7)
 
 npm manifest: 
   {
     "name": "",
     "scripts": {
-      "build": "gulp build"
+      "build": "gulp build",
+      "service": "node ./dist/service.mjs"
     },
     "devDependencies": {
       "@babel/core": "^7.11.1",
@@ -53,9 +47,7 @@ npm manifest:
       "ts-node": "^8.10.2",
       "typescript": "^3.9.7"
     },
-    "dependencies": {
-      "net": "^1.0.2"
-    }
+    "dependencies": {}
   }
 
 yarn manifest: 
@@ -3136,11 +3128,6 @@ Lockfile:
     version "1.4.0"
     resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
     integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
-  
-  net@^1.0.2:
-    version "1.0.2"
-    resolved "https://registry.yarnpkg.com/net/-/net-1.0.2.tgz#d1757ec9a7fb2371d83cf4755ce3e27e10829388"
-    integrity sha1-0XV+yaf7I3HYPPR1XOPifhCCk4g=
   
   next-tick@~1.0.0:
     version "1.0.0"

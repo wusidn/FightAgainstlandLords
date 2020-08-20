@@ -64,7 +64,7 @@ export const serviceConfig: RollupOptions = {
             ],
         }),
     ],
-    external: ['net', 'readline']
+    external: ['os', 'net', 'readline', 'crypto']
 };
 
 //client config
@@ -97,7 +97,7 @@ export const clientConfig: RollupOptions = {
             customResolveOptions: {
                 moduleDirectory: 'node_modules',
             },
-            preferBuiltins: true,   //屏蔽调用js库错误
+            preferBuiltins: true,   //屏蔽ts引用js库错误
         }),
         rollupTypescript(),
         babel({
