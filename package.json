@@ -5,6 +5,18 @@
     "service": "node ./dist/service.mjs",
     "client": "node ./dist/client.mjs"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "prettier --config .prettierrc --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.11.1",
@@ -13,12 +25,15 @@
     "@types/gulp": "^4.0.6",
     "@types/node": "^14.0.27",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^3.9.0",
-    "@typescript-eslint/parser": "^3.9.0",
+    "@typescript-eslint/eslint-plugin": "^3.9.1",
+    "@typescript-eslint/parser": "^3.9.1",
     "chalk": "^4.1.0",
     "eslint": "^7.7.0",
     "fs-extra": "^9.0.1",
     "gulp": "^4.0.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
     "rollup": "^2.26.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
