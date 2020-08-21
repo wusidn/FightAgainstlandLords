@@ -11,10 +11,9 @@
     }
   },
   "lint-staged": {
-    "**": [
+    "**/*.ts": [
       "prettier --config .prettierrc --write",
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "license": "MIT",
