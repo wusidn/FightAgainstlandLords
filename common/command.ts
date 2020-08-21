@@ -52,6 +52,8 @@ export class CommandService {
                 const params = line.trim().replace(/\u0020+/g, " ").split(space);
                 const cmd = params[0];
 
+                this.ready();
+
                 if (!this.registerList.has(cmd)) {
                     cmd && this.log(`command not find: ${cmd}`);
                     return;
