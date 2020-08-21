@@ -1,144 +1,137 @@
-import * as uuid from 'uuid'
+import * as uuid from "uuid";
 
 const EventControlSymbol = Symbol("EventControlSymbol");
 const EventInterceptFuncListSymbol = Symbol("EventInterceptFuncListSymbol");
 const EventListenerFuncListSymbol = Symbol("EventListenerFuncListSymbol");
 
-export type EventFuncType = (e: Event, ...args: unknown[]) => void;
+export type EventFuncType = (e: Event, ...args: unknown[]) => void
 
 enum EventType {
-    Default,
-    Once,
+	Default,
+	Once,
 }
 
 export interface EventOptions {
-    capture?: boolean;
-    once?: boolean;
+	capture?: boolean
+	once?: boolean
 }
 
 interface EventFunc {
-    id: string;
-    type: EventType;
-    func: EventFuncType;
+	id: string
+	type: EventType
+	func: EventFuncType
 }
 
 class EventControl {
-    public stopPropagation: boolean;
-    public preventDefault: boolean;
+	public stopPropagation: boolean
+	public preventDefault: boolean
 
-    constructor () {
-        this.stopPropagation = false;
-        this.preventDefault = false;
-    }
+	constructor() {
+		this.stopPropagation = false;
+		this.preventDefault = false;
+	}
 }
 
 export class Event {
-    constructor () {
+	constructor() {
+		Object.defineProperty(this, EventControlSymbol, {
+			value: new EventControl(),
+		});
 
-        Object.defineProperty(this, EventControlSymbol, {
-            value: new EventControl(),
-        });
+		Object.defineProperty(this, EventInterceptFuncListSymbol, {
+			value: new Array<EventFunc>(),
+		});
 
-        Object.defineProperty(this, EventInterceptFuncListSymbol, {
-            value: new Array<EventFunc>(),
-        });
+		Object.defineProperty(this, EventListenerFuncListSymbol, {
+			value: new Array<EventFunc>(),
+		});
+	}
 
-        Object.defineProperty(this, EventListenerFuncListSymbol, {
-            value: new Array<EventFunc>(),
-        });
-    }
+	public stopPropagation(): void {
+		this[EventControlSymbol].stopPropagation = true;
+	}
 
-    public stopPropagation(): void {
-        this[EventControlSymbol].stopPropagation = true;
-    }
-
-    public preventDefault(): void {
-        this[EventControlSymbol].preventDefault = true;
-    }
+	public preventDefault(): void {
+		this[EventControlSymbol].preventDefault = true;
+	}
 }
 
 export class EventService {
+	private eventListenerPool: Map<string, Event>
 
-    private eventListenerPool: Map<string, Event>;
+	constructor() {
+		this.eventListenerPool = new Map<string, Event>();
+	}
 
-    constructor () {
-        this.eventListenerPool = new Map<string, Event>();
-    }
+	public addEventListener(event: string, callback: EventFuncType): string
+	public addEventListener(event: string, callback: EventFuncType, useCapture: boolean): string
+	public addEventListener(event: string, callback: EventFuncType, options: EventOptions): string
+	public addEventListener(event: string, callback: EventFuncType, other?: boolean | EventOptions): string {
+		const options: EventOptions = ["undefined", "boolean"].includes(typeof other) ? {} : (other as EventOptions);
+		const capture: boolean = options.capture || false;
 
-    public addEventListener(event: string, callback: EventFuncType): string;
-    public addEventListener(event: string, callback: EventFuncType, useCapture: boolean): string;
-    public addEventListener(event: string, callback: EventFuncType, options: EventOptions): string;
-    public addEventListener(event: string, callback: EventFuncType, other?: boolean | EventOptions ): string{
+		!this.eventListenerPool.has(event) && this.eventListenerPool.set(event, new Event());
+		const eventFuncList: Array<EventFunc> = (this.eventListenerPool.get(event) as Event)[capture ? EventInterceptFuncListSymbol : EventListenerFuncListSymbol];
 
-        const options: EventOptions = ["undefined", "boolean"].includes(typeof other) ? {} : other as EventOptions;
-        const capture: boolean = options.capture || false;
+		const eventId: string = uuid.v1();
 
-        !this.eventListenerPool.has(event) && this.eventListenerPool.set(event, new Event());
-        const eventFuncList: Array<EventFunc> = (this.eventListenerPool.get(event) as Event)[( capture ? EventInterceptFuncListSymbol : EventListenerFuncListSymbol)];
+		eventFuncList.push({
+			id: eventId,
+			type: options.once || false ? EventType.Once : EventType.Default,
+			func: callback,
+		});
 
-        const eventId: string = uuid.v1();
+		return eventId;
+	}
 
-        eventFuncList.push({
-            id: eventId, 
-            type: (options.once || false) ? EventType.Once : EventType.Default, 
-            func: callback 
-        });
+	public removeEventListener(event: string, eventId: string): void
+	public removeEventListener(event: string, cb: EventFuncType): void
+	public removeEventListener(event: string, param: EventFuncType | string): void {
+		if (!this.eventListenerPool.has(event)) {
+			return;
+		}
 
-        return eventId;
-    }
+		const e = this.eventListenerPool.get(event) as Event
 
-    public removeEventListener(event: string, eventId: string): void;
-    public removeEventListener(event: string, cb: EventFuncType): void;
-    public removeEventListener(event: string, param: EventFuncType | string): void {
+		;[e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
+			for (;;) {
+				const findIndex = funcList.findIndex((func: EventFunc) => {
+					return func.id == param || func.func == param;
+				});
+				if (findIndex > -1) break;
 
-        if (!this.eventListenerPool.has(event)) {
-            return;
-        }
+				funcList.splice(findIndex, 1);
+			}
+		});
+	}
 
-        const e = this.eventListenerPool.get(event) as Event;
+	public emit(event: string, ...args: unknown[]): boolean {
+		if (!this.eventListenerPool.has(event)) {
+			return false;
+		}
 
-        [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
+		const removeEventFuncIdList: Array<string> = [];
+		const e = this.eventListenerPool.get(event) as Event;
 
-            for (;;) {
-                const findIndex = funcList.findIndex((func: EventFunc) => {
-                    return func.id == param || func.func == param;
-                });
-                if (findIndex > -1) break;
+		const res = (function () {
+			[e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
+				funcList.forEach((func: EventFunc) => {
+					func.func(e, ...args);
 
-                funcList.splice(findIndex, 1);
-            }
-        });
-    }
+					func.type == EventType.Once && removeEventFuncIdList.push(func.id);
 
-    public emit(event: string, ...args: unknown[]): boolean {
-        
-        if (!this.eventListenerPool.has(event)) {
-            return false;
-        }
+					if (e[EventControlSymbol].stopPropagation) {
+						return e[EventControlSymbol].stopPropagation;
+					}
+				});
+			});
+			return e[EventControlSymbol].preventDefault;
+		})();
 
-        const removeEventFuncIdList: Array<string> = [];
-        const e = this.eventListenerPool.get(event) as Event;
+		removeEventFuncIdList.forEach(id => {
+			this.removeEventListener(event, id);
+		});
 
-        const res = (function() {
-            [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
-                funcList.forEach((func: EventFunc) => {
-                    func.func(e, ...args);
-
-                    (func.type == EventType.Once) && removeEventFuncIdList.push(func.id);
-                    
-                    if (e[EventControlSymbol].stopPropagation) {
-                        return e[EventControlSymbol].stopPropagation;
-                    }
-                });
-            });
-            return e[EventControlSymbol].preventDefault;
-        })();
-
-        removeEventFuncIdList.forEach(id => {
-            this.removeEventListener(event, id);
-        });
-
-        return res;
-    }
-    
+		return res;
+	}
 }

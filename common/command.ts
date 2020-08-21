@@ -1,82 +1,81 @@
-import readLine from 'readline'
-import { EventService, Event } from './event'
+import readLine from "readline";
+import { EventService, Event } from "./event";
 
-type CommandCallbackType = (args: Array<string>) => boolean | void;
+type CommandCallbackType = (args: Array<string>) => boolean | void
 
 export class CommandService {
+	private event!: EventService
+	private registerList!: Set<string>
 
-    private event!: EventService;
-    private registerList!: Set<string>;
+	constructor() {
+		this.event = new EventService();
+		this.registerList = new Set<string>();
+	}
 
-    constructor () {
-        this.event = new EventService();
-        this.registerList = new Set<string>();
-    }
-    
-    private rl!: readLine.Interface;
+	private rl!: readLine.Interface
 
-    public ready (): void {
-        this.rl.prompt();
-    }
+	public ready(): void {
+		this.rl.prompt();
+	}
 
-    public register (command: string, cb: CommandCallbackType): boolean;
-    public register (commands: string[], cb: CommandCallbackType): boolean;
-    public register (command: string | string[], cb: CommandCallbackType): boolean {
+	public register(command: string, cb: CommandCallbackType): boolean
+	public register(commands: string[], cb: CommandCallbackType): boolean
+	public register(command: string | string[], cb: CommandCallbackType): boolean {
+		const cmds = typeof command == "string" ? [command] : command;
+		cmds.forEach(cmd => {
+			if (this.registerList.has(cmd)) {
+				this.log(`repter regist [${cmd}]`);
+				return;
+			}
 
-        const cmds = typeof command == "string" ? [command] : command;
-        cmds.forEach(cmd => {
+			this.event.addEventListener(cmd, (_: Event, ...args: unknown[]) => {
+				cb(args as Array<string>);
+			});
+			this.registerList.add(cmd);
+		});
+		return true;
+	}
 
-            if (this.registerList.has(cmd)) {
-                this.log(`repter regist [${cmd}]`);
-                return;
-            }
+	public start(cb?: (() => void) | undefined): void {
+		process.nextTick(() => {
+			this.rl = readLine.createInterface({
+				input: process.stdin,
+				output: process.stdout,
+				prompt: "> ",
+			});
 
-            this.event.addEventListener(cmd, (_: Event, ...args: unknown[]) => {
-                cb(args as Array<string>);
-            });
-            this.registerList.add(cmd);
-        });
-        return true;
-    }
+			this.rl.on("line", line => {
+				const space = String.fromCharCode(0x20);
+				const params = line
+					.trim()
+					.replace(/\u0020+/g, " ")
+					.split(space);
+				const cmd = params[0];
 
-    public start (cb?: (() => void) | undefined): void {
-        process.nextTick(() => {
-            this.rl = readLine.createInterface({
-                input: process.stdin,
-                output: process.stdout,
-                prompt: "> "
-            });
+				this.ready();
 
-            this.rl.on("line", (line) => {
-                const space = String.fromCharCode(0x20);
-                const params = line.trim().replace(/\u0020+/g, " ").split(space);
-                const cmd = params[0];
+				if (!this.registerList.has(cmd)) {
+					cmd && this.log(`command not find: ${cmd}`);
+					return;
+				}
 
-                this.ready();
+				this.event.emit(cmd, ...params);
+			});
 
-                if (!this.registerList.has(cmd)) {
-                    cmd && this.log(`command not find: ${cmd}`);
-                    return;
-                }
+			this.rl.on("close", () => {
+				process.exit(0);
+			});
 
-                this.event.emit(cmd, ...params);
-            });
+			cb && cb();
+		});
+	}
 
-            this.rl.on("close", () => {
-                process.exit(0);
-            });
+	public log(str: string): void {
+		process.stdout.cursorTo(0);
+		process.stdout.clearScreenDown();
 
-            cb && cb();
-        });
-    }
+		console.log(str);
 
-    public log (str: string): void {
-
-        process.stdout.cursorTo(0);
-        process.stdout.clearScreenDown();
-
-        console.log(str);
-        
-        this.ready();
-    }
+		this.ready();
+	}
 }
