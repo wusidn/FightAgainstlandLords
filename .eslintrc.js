@@ -1,26 +1,36 @@
-const eslintrc = {  
-    parser: '@typescript-eslint/parser', // 使用 ts 解析器
-    extends: [
-        'eslint:recommended', // eslint 推荐规则
-        'plugin:@typescript-eslint/recommended', // ts 推荐规则
-    ],
-    plugins: [
-        '@typescript-eslint',
-    ],
-    env: {
-        browser: true,
-        node: true,
-        es6: true,
-    },
-    parserOptions: {
-        project: './tsconfig.eslint.json',
-        ecmaVersion: 2019,
-        sourceType: 'module',
-        ecmaFeatures: {
-          experimentalObjectRestSpread: true
-        }
-    },
-    rules: {}, // 自定义
-}
-
-module.exports = eslintrc 
+module.exports = {
+	"env": {
+		"browser": true,
+		"es2020": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 11,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"rules": {
+		"indent": [
+			"error",
+			"tab"
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"quotes": [
+			"error",
+			"double"
+		],
+		"semi": [
+			"error",
+			"always"
+		]
+	}
+};
