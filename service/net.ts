@@ -7,7 +7,7 @@ export interface ClientInfo {
     client: Socket;
 }
 
-export default class NetService {
+export class NetService {
 
     private port!: number;    
     private clientList!: Map<string, Socket>;
@@ -85,6 +85,8 @@ export default class NetService {
         return true;
     }
 
+    public send(clientId: string, data: string) :boolean;
+    public send(clientId: string, data: Uint8Array) :boolean
     public send(clientId: string, data: string | Uint8Array) :boolean {
 
         if (["all", "*"].includes(clientId)) {

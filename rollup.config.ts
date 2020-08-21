@@ -110,5 +110,6 @@ export const clientConfig: RollupOptions = {
               '.ts',
             ],
         }),
-    ]
+    ],
+    external: ['readline', 'net', 'crypto']
 }

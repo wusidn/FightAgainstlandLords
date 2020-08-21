@@ -2,7 +2,8 @@
   "name": "",
   "scripts": {
     "build": "gulp build",
-    "service": "node ./dist/service.mjs"
+    "service": "node ./dist/service.mjs",
+    "client": "node ./dist/client.mjs"
   },
   "license": "MIT",
   "devDependencies": {

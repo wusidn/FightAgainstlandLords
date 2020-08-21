@@ -1,5 +1,5 @@
-import CommandService from './command'
-import NetService from './net'
+import { CommandService } from '../common/command'
+import { NetService } from './net'
 
 const command: CommandService = new CommandService();
 const net: NetService = new NetService();

@@ -1,7 +1,15 @@
-console.log("Hello Client");
+import { CommandService } from '../common/command'
+import { NetService } from './net'
 
-let num = 0;
+const command = new CommandService();
+const net = new NetService();
 
-setInterval(() => {
-    console.log("------", ++num);
-}, 1000);
+command.register("create", (args: string[]) => {
+    command.log(`${args}`);
+});
+
+net.start();
+
+command.start(() => {
+    command.ready();
+});

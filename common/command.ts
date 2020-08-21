@@ -1,11 +1,16 @@
 import readLine from 'readline'
+import { EventService } from './event'
 
-export default class CommandService {
+type CommandCallbackType = (args: Array<string>) => boolean | void;
 
-    private commandPoll!: Map<string, (args: Array<string>) => boolean | void>
+export class CommandService {
+
+    private event!: EventService;
+    private registerList!: Set<string>;
 
     constructor () {
-        this.commandPoll = new Map<string, (args: Array<string>) => boolean | void>();
+        this.event = new EventService();
+        this.registerList = new Set<string>();
     }
     
     private rl!: readLine.Interface;
@@ -14,13 +19,22 @@ export default class CommandService {
         this.rl.prompt();
     }
 
-    public register (command: string | string[], cb: (args: Array<string>) => boolean | void): boolean {
+    public register (command: string, cb: CommandCallbackType): boolean;
+    public register (commands: string[], cb: CommandCallbackType): boolean;
+    public register (command: string | string[], cb: CommandCallbackType): boolean {
 
         const cmds = typeof command == "string" ? [command] : command;
         cmds.forEach(cmd => {
-            if (!this.commandPoll.has(cmd)) {
-                this.commandPoll.set(cmd, cb);
+
+            if (this.registerList.has(cmd)) {
+                this.log(`repter regist [${cmd}]`);
+                return;
             }
+
+            this.event.addEventListener(cmd, (e: Event, ...args: Array<any>) => {
+                cb.apply(undefined, args as [Array<string>]);
+            });
+            this.registerList.add(cmd);
         })
         return true;
     }
@@ -37,16 +51,13 @@ export default class CommandService {
                 const space = String.fromCharCode(0x20);
                 const params = line.trim().replace(/\u0020+/g, " ").split(space);
                 const cmd = params[0];
-                if (!this.commandPoll.has(cmd)) {
-                    cmd && console.log(`command not find: ${cmd}`);
-                    this.ready();
+
+                if (!this.registerList.has(cmd)) {
+                    cmd && this.log(`command not find: ${cmd}`);
                     return;
                 }
 
-                const cbres = (this.commandPoll.get(cmd) as (args: Array<string>) => boolean)(params);
-                if (typeof cbres != 'boolean' || cbres) {
-                    this.ready();
-                }
+                this.event.emit(cmd, params);
             });
 
             this.rl.on("close", () => {
