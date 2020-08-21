@@ -4,7 +4,7 @@ const EventControlSymbol = Symbol("EventControlSymbol");
 const EventInterceptFuncListSymbol = Symbol("EventInterceptFuncListSymbol");
 const EventListenerFuncListSymbol = Symbol("EventListenerFuncListSymbol");
 
-export type EventFuncType = (e: Event, ...args: unknown[]) => void
+export type EventFuncType = (e: Event, ...args: unknown[]) => void;
 
 enum EventType {
 	Default,
@@ -12,19 +12,19 @@ enum EventType {
 }
 
 export interface EventOptions {
-	capture?: boolean
-	once?: boolean
+	capture?: boolean;
+	once?: boolean;
 }
 
 interface EventFunc {
-	id: string
-	type: EventType
-	func: EventFuncType
+	id: string;
+	type: EventType;
+	func: EventFuncType;
 }
 
 class EventControl {
-	public stopPropagation: boolean
-	public preventDefault: boolean
+	public stopPropagation: boolean;
+	public preventDefault: boolean;
 
 	constructor() {
 		this.stopPropagation = false;
@@ -57,15 +57,15 @@ export class Event {
 }
 
 export class EventService {
-	private eventListenerPool: Map<string, Event>
+	private eventListenerPool: Map<string, Event>;
 
 	constructor() {
 		this.eventListenerPool = new Map<string, Event>();
 	}
 
-	public addEventListener(event: string, callback: EventFuncType): string
-	public addEventListener(event: string, callback: EventFuncType, useCapture: boolean): string
-	public addEventListener(event: string, callback: EventFuncType, options: EventOptions): string
+	public addEventListener(event: string, callback: EventFuncType): string;
+	public addEventListener(event: string, callback: EventFuncType, useCapture: boolean): string;
+	public addEventListener(event: string, callback: EventFuncType, options: EventOptions): string;
 	public addEventListener(event: string, callback: EventFuncType, other?: boolean | EventOptions): string {
 		const options: EventOptions = ["undefined", "boolean"].includes(typeof other) ? {} : (other as EventOptions);
 		const capture: boolean = options.capture || false;
@@ -84,16 +84,16 @@ export class EventService {
 		return eventId;
 	}
 
-	public removeEventListener(event: string, eventId: string): void
-	public removeEventListener(event: string, cb: EventFuncType): void
+	public removeEventListener(event: string, eventId: string): void;
+	public removeEventListener(event: string, cb: EventFuncType): void;
 	public removeEventListener(event: string, param: EventFuncType | string): void {
 		if (!this.eventListenerPool.has(event)) {
 			return;
 		}
 
-		const e = this.eventListenerPool.get(event) as Event
+		const e = this.eventListenerPool.get(event) as Event;
 
-		;[e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
+		[e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
 			for (;;) {
 				const findIndex = funcList.findIndex((func: EventFunc) => {
 					return func.id == param || func.func == param;
