@@ -4,14 +4,14 @@ const EventControlSymbol = Symbol("EventControlSymbol");
 const EventInterceptFuncListSymbol = Symbol("EventInterceptFuncListSymbol");
 const EventListenerFuncListSymbol = Symbol("EventListenerFuncListSymbol");
 
-type EventFuncType = (...args: any[]) => void;
+export type EventFuncType = (e: Event, ...args: unknown[]) => void;
 
 enum EventType {
     Default,
     Once,
 }
 
-interface EventOptions {
+export interface EventOptions {
     capture?: boolean;
     once?: boolean;
 }
@@ -32,7 +32,7 @@ class EventControl {
     }
 }
 
-class Event {
+export class Event {
     constructor () {
 
         Object.defineProperty(this, EventControlSymbol, {
@@ -100,7 +100,7 @@ export class EventService {
         [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
 
             for (;;) {
-                let findIndex = funcList.findIndex((func: EventFunc) => {
+                const findIndex = funcList.findIndex((func: EventFunc) => {
                     return func.id == param || func.func == param;
                 });
                 if (findIndex > -1) break;
@@ -110,7 +110,7 @@ export class EventService {
         });
     }
 
-    public emit(event: string, ...args: any[]): boolean {
+    public emit(event: string, ...args: unknown[]): boolean {
         
         if (!this.eventListenerPool.has(event)) {
             return false;
@@ -119,10 +119,10 @@ export class EventService {
         const removeEventFuncIdList: Array<string> = [];
         const e = this.eventListenerPool.get(event) as Event;
 
-        let res = (function() {
+        const res = (function() {
             [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
                 funcList.forEach((func: EventFunc) => {
-                    func.func.apply(undefined, [e, ...args]);
+                    func.func(e, ...args);
 
                     (func.type == EventType.Once) && removeEventFuncIdList.push(func.id);
                     

@@ -1,4 +1,5 @@
 import { CommandService } from '../common/command'
+import { Event } from '../common/event'
 import { NetService } from './net'
 
 const command: CommandService = new CommandService();
@@ -28,17 +29,17 @@ command.register("send", (args: string[]) => {
     net.send(args[1], `${args.slice(2).join(" ")}\n`);
 });
 
-net.onAccept = (id: string) => {
+net.addEventListener("accept", (_: Event, id: string) => {
     command.log(`acceptd: ${id}`);
-};
+});
 
-net.onClose = (id: string) => {
+net.addEventListener("close", (_: Event, id: string) => {
     command.log(`closed: ${id}`);
-}
+});
 
-net.onRecv = (data: string | Uint8Array) => {
-    command.log(`recv: ${data}`.trim());
-}
+net.addEventListener("recv", (_: Event, data: string | Uint8Array) => {
+    command.log(`recv: ${data.toString().replace("\n", "")}`);
+});
 
 command.start(() => {
     command.ready();

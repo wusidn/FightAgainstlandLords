@@ -1,5 +1,5 @@
 import readLine from 'readline'
-import { EventService } from './event'
+import { EventService, Event } from './event'
 
 type CommandCallbackType = (args: Array<string>) => boolean | void;
 
@@ -31,8 +31,8 @@ export class CommandService {
                 return;
             }
 
-            this.event.addEventListener(cmd, (e: Event, ...args: Array<any>) => {
-                cb.apply(undefined, args as [Array<string>]);
+            this.event.addEventListener(cmd, (_: Event, ...args: unknown[]) => {
+                cb(args as Array<string>);
             });
             this.registerList.add(cmd);
         })
@@ -59,7 +59,7 @@ export class CommandService {
                     return;
                 }
 
-                this.event.emit(cmd, params);
+                this.event.emit(cmd, ...params);
             });
 
             this.rl.on("close", () => {

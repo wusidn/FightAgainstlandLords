@@ -40,7 +40,7 @@ export const serviceConfig: RollupOptions = {
         eslint({
             throwOnError: true, // lint 结果有错误将会抛出异常
             throwOnWarning: true,
-            include: ['service/*.ts'],
+            include: ['service/*.ts', 'common/*.ts', 'untls/*.ts'],
             exclude: ['node_modules/**', 'dist/service.*', '*.js'],
         }),
         commonjs(),
@@ -87,7 +87,7 @@ export const clientConfig: RollupOptions = {
         eslint({
             throwOnError: true, // lint 结果有错误将会抛出异常
             throwOnWarning: true,
-            include: ['client/*.ts'],
+            include: ['client/*.ts', 'common/*.ts', 'untls/*.ts'],
             exclude: ['node_modules/**', 'dist/client.*', '*.js'],
         }),
         commonjs(),
