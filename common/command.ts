@@ -35,7 +35,7 @@ export class CommandService {
                 cb(args as Array<string>);
             });
             this.registerList.add(cmd);
-        })
+        });
         return true;
     }
 
