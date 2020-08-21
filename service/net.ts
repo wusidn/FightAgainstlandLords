@@ -5,14 +5,14 @@ import os from "os";
 import { EventService, EventOptions, EventFuncType, Event } from "../common/event";
 
 export interface ClientInfo {
-	id: string
-	client: Socket
+	id: string;
+	client: Socket;
 }
 
 export class NetService {
-	private port!: number
-	private clientList!: Map<string, Socket>
-	private event!: EventService
+	private port!: number;
+	private clientList!: Map<string, Socket>;
+	private event!: EventService;
 
 	constructor(port?: number) {
 		this.port = port || 21024;
@@ -85,8 +85,8 @@ export class NetService {
 		return true;
 	}
 
-	public send(clientId: string, data: string): boolean
-	public send(clientId: string, data: Uint8Array): boolean
+	public send(clientId: string, data: string): boolean;
+	public send(clientId: string, data: Uint8Array): boolean;
 	public send(clientId: string, data: string | Uint8Array): boolean {
 		if (["all", "*"].includes(clientId)) {
 			[...this.clientList.values()].forEach(client => {
@@ -105,13 +105,13 @@ export class NetService {
 		return true;
 	}
 
-	public addEventListener(event: "accept", func: (e: Event, client: string) => void, useCapture?: boolean): string
-	public addEventListener(event: "accept", func: (e: Event, client: string) => void, options?: EventOptions): string
-	public addEventListener(event: "close", func: (e: Event, client: string) => void, useCapture?: boolean): string
-	public addEventListener(event: "close", func: (e: Event, client: string) => void, option?: EventOptions): string
-	public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, useCapture?: boolean): string
-	public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, option?: EventOptions): string
-	public addEventListener(event: string, func: EventFuncType, param?: boolean | EventOptions): string
+	public addEventListener(event: "accept", func: (e: Event, client: string) => void, useCapture?: boolean): string;
+	public addEventListener(event: "accept", func: (e: Event, client: string) => void, options?: EventOptions): string;
+	public addEventListener(event: "close", func: (e: Event, client: string) => void, useCapture?: boolean): string;
+	public addEventListener(event: "close", func: (e: Event, client: string) => void, option?: EventOptions): string;
+	public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, useCapture?: boolean): string;
+	public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, option?: EventOptions): string;
+	public addEventListener(event: string, func: EventFuncType, param?: boolean | EventOptions): string;
 	public addEventListener(event: string, func: unknown, param?: boolean | EventOptions): string {
 		switch (typeof param) {
 		case "undefined":
@@ -123,13 +123,13 @@ export class NetService {
 		}
 	}
 
-	public removeEventListener(event: "accept", eventId: string): void
-	public removeEventListener(event: "accept", func: (e: Event, client: string) => void): void
-	public removeEventListener(event: "close", eventId: string): void
-	public removeEventListener(event: "close", func: (e: Event, client: string) => void): void
-	public removeEventListener(event: "recv", eventId: string): void
-	public removeEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void): void
-	public removeEventListener(event: string, param: EventFuncType): void
+	public removeEventListener(event: "accept", eventId: string): void;
+	public removeEventListener(event: "accept", func: (e: Event, client: string) => void): void;
+	public removeEventListener(event: "close", eventId: string): void;
+	public removeEventListener(event: "close", func: (e: Event, client: string) => void): void;
+	public removeEventListener(event: "recv", eventId: string): void;
+	public removeEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void): void;
+	public removeEventListener(event: string, param: EventFuncType): void;
 	public removeEventListener(event: string, param: unknown): void {
 		if (typeof param == "string") {
 			return this.event.removeEventListener(event, param);

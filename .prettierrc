@@ -3,7 +3,7 @@
     "tabWidth": 2,
     "useTabs": true,
     "semi": true,
-    "quoteProps", "consistent",
+    "quote-props": "consistent",
     "singleQuote": true,
     "bracketSpacing": true,
     "arrowParens": "avoid"

@@ -1,7 +1,7 @@
 import { createConnection, Socket } from "net";
 
 export class NetService {
-	private socket!: Socket
+	private socket!: Socket;
 
 	public start(): void {
 		process.nextTick(() => {

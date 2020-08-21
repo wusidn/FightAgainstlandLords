@@ -1,25 +1,25 @@
 import readLine from "readline";
 import { EventService, Event } from "./event";
 
-type CommandCallbackType = (args: Array<string>) => boolean | void
+type CommandCallbackType = (args: Array<string>) => boolean | void;
 
 export class CommandService {
-	private event!: EventService
-	private registerList!: Set<string>
+	private event!: EventService;
+	private registerList!: Set<string>;
 
 	constructor() {
 		this.event = new EventService();
 		this.registerList = new Set<string>();
 	}
 
-	private rl!: readLine.Interface
+	private rl!: readLine.Interface;
 
 	public ready(): void {
 		this.rl.prompt();
 	}
 
-	public register(command: string, cb: CommandCallbackType): boolean
-	public register(commands: string[], cb: CommandCallbackType): boolean
+	public register(command: string, cb: CommandCallbackType): boolean;
+	public register(commands: string[], cb: CommandCallbackType): boolean;
 	public register(command: string | string[], cb: CommandCallbackType): boolean {
 		const cmds = typeof command == "string" ? [command] : command;
 		cmds.forEach(cmd => {
