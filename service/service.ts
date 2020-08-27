@@ -18,12 +18,12 @@ export class Service {
 
         this.command.register("ls", (args: string[]) => {
             switch (args[1]) {
-            case "client":
-            default:
-                this.net.getClientList().forEach(id => {
-                    this.command.log(id);
-                });
-                break;
+                case "client":
+                default:
+                    this.net.getClientList().forEach(id => {
+                        this.command.log(id);
+                    });
+                    break;
             }
         });
 

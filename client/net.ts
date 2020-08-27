@@ -41,18 +41,18 @@ export class NetService {
         return this.socket.write(data, cb);
     }
 
-    public addEventListener(event: "close", func: (e: Event) => void, capture?: boolean): string;
-    public addEventListener(event: "close", func: (e: Event) => void, options?: EventOptions): string;
-    public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, capture?: boolean): string;
-    public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, options?: EventOptions): string;
-    public addEventListener(event: string, func: unknown, param?: boolean | EventOptions): string {
+    public addEventListener(event: "close", cb: (e: Event) => void, capture?: boolean): string;
+    public addEventListener(event: "close", cb: (e: Event) => void, options?: EventOptions): string;
+    public addEventListener(event: "recv", cb: (e: Event, data: string | Uint8Array) => void, capture?: boolean): string;
+    public addEventListener(event: "recv", cb: (e: Event, data: string | Uint8Array) => void, options?: EventOptions): string;
+    public addEventListener(event: string, cb: unknown, param?: boolean | EventOptions): string {
         switch (typeof param) {
-        case "undefined":
-            return this.event.addEventListener(event, func as EventFuncType);
-        case "boolean":
-            return this.event.addEventListener(event, func as EventFuncType, param);
-        default:
-            return this.event.addEventListener(event, func as EventFuncType, param);
+            case "undefined":
+                return this.event.addEventListener(event, cb as EventFuncType);
+            case "boolean":
+                return this.event.addEventListener(event, cb as EventFuncType, param);
+            default:
+                return this.event.addEventListener(event, cb as EventFuncType, param);
         }
     }
 
@@ -60,12 +60,12 @@ export class NetService {
     public removeEventListener(event: string, cb: EventFuncType): void;
     public removeEventListener(event: string, param: EventFuncType | string): void {
         switch (typeof param) {
-        case "string":
-            this.event.removeEventListener(event, param);
-            break;
-        default:
-            this.event.removeEventListener(event, param);
-            break;
+            case "string":
+                this.event.removeEventListener(event, param);
+                break;
+            default:
+                this.event.removeEventListener(event, param);
+                break;
         }
     }
 }

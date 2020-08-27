@@ -105,30 +105,30 @@ export class NetService {
         return true;
     }
 
-    public addEventListener(event: "accept", func: (e: Event, client: string) => void, useCapture?: boolean): string;
-    public addEventListener(event: "accept", func: (e: Event, client: string) => void, options?: EventOptions): string;
-    public addEventListener(event: "close", func: (e: Event, client: string) => void, useCapture?: boolean): string;
-    public addEventListener(event: "close", func: (e: Event, client: string) => void, option?: EventOptions): string;
-    public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, useCapture?: boolean): string;
-    public addEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void, option?: EventOptions): string;
-    public addEventListener(event: string, func: EventFuncType, param?: boolean | EventOptions): string;
-    public addEventListener(event: string, func: unknown, param?: boolean | EventOptions): string {
+    public addEventListener(event: "accept", cb: (e: Event, client: string) => void, useCapture?: boolean): string;
+    public addEventListener(event: "accept", cb: (e: Event, client: string) => void, options?: EventOptions): string;
+    public addEventListener(event: "close", cb: (e: Event, client: string) => void, useCapture?: boolean): string;
+    public addEventListener(event: "close", cb: (e: Event, client: string) => void, option?: EventOptions): string;
+    public addEventListener(event: "recv", cb: (e: Event, data: string | Uint8Array) => void, useCapture?: boolean): string;
+    public addEventListener(event: "recv", cb: (e: Event, data: string | Uint8Array) => void, option?: EventOptions): string;
+    public addEventListener(event: string, cb: EventFuncType, param?: boolean | EventOptions): string;
+    public addEventListener(event: string, cb: unknown, param?: boolean | EventOptions): string {
         switch (typeof param) {
-        case "undefined":
-            return this.event.addEventListener(event, func as EventFuncType);
-        case "boolean":
-            return this.event.addEventListener(event, func as EventFuncType, param);
-        default:
-            return this.event.addEventListener(event, func as EventFuncType, param);
+            case "undefined":
+                return this.event.addEventListener(event, cb as EventFuncType);
+            case "boolean":
+                return this.event.addEventListener(event, cb as EventFuncType, param);
+            default:
+                return this.event.addEventListener(event, cb as EventFuncType, param);
         }
     }
 
     public removeEventListener(event: "accept", eventId: string): void;
-    public removeEventListener(event: "accept", func: (e: Event, client: string) => void): void;
+    public removeEventListener(event: "accept", cb: (e: Event, client: string) => void): void;
     public removeEventListener(event: "close", eventId: string): void;
-    public removeEventListener(event: "close", func: (e: Event, client: string) => void): void;
+    public removeEventListener(event: "close", cb: (e: Event, client: string) => void): void;
     public removeEventListener(event: "recv", eventId: string): void;
-    public removeEventListener(event: "recv", func: (e: Event, data: string | Uint8Array) => void): void;
+    public removeEventListener(event: "recv", cb: (e: Event, data: string | Uint8Array) => void): void;
     public removeEventListener(event: string, param: EventFuncType): void;
     public removeEventListener(event: string, param: unknown): void {
         if (typeof param == "string") {

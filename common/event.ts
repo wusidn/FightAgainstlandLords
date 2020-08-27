@@ -19,7 +19,7 @@ export interface EventOptions {
 interface EventFunc {
     id: string;
     type: EventType;
-    func: EventFuncType;
+    cb: EventFuncType;
 }
 
 class EventControl {
@@ -63,10 +63,10 @@ export class EventService {
         this.eventListenerPool = new Map<string, Event>();
     }
 
-    public addEventListener(event: string, callback: EventFuncType): string;
-    public addEventListener(event: string, callback: EventFuncType, useCapture: boolean): string;
-    public addEventListener(event: string, callback: EventFuncType, options: EventOptions): string;
-    public addEventListener(event: string, callback: EventFuncType, other?: boolean | EventOptions): string {
+    public addEventListener(event: string, cb: EventFuncType): string;
+    public addEventListener(event: string, cb: EventFuncType, useCapture: boolean): string;
+    public addEventListener(event: string, cb: EventFuncType, options: EventOptions): string;
+    public addEventListener(event: string, cb: EventFuncType, other?: boolean | EventOptions): string {
         const options: EventOptions = ["undefined", "boolean"].includes(typeof other) ? {} : (other as EventOptions);
         const capture: boolean = options.capture || false;
 
@@ -78,7 +78,7 @@ export class EventService {
         eventFuncList.push({
             id: eventId,
             type: options.once || false ? EventType.Once : EventType.Default,
-            func: callback,
+            cb,
         });
 
         return eventId;
@@ -96,7 +96,7 @@ export class EventService {
         [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
             for (;;) {
                 const findIndex = funcList.findIndex((func: EventFunc) => {
-                    return func.id == param || func.func == param;
+                    return func.id == param || func.cb == param;
                 });
                 if (findIndex > -1) break;
 
@@ -116,7 +116,7 @@ export class EventService {
         const res = (function () {
             [e[EventInterceptFuncListSymbol], e[EventListenerFuncListSymbol]].forEach((funcList: Array<EventFunc>) => {
                 funcList.forEach((func: EventFunc) => {
-                    func.func(e, ...args);
+                    func.cb(e, ...args);
 
                     func.type == EventType.Once && removeEventFuncIdList.push(func.id);
 
