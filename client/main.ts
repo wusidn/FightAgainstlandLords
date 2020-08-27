@@ -1,15 +1,4 @@
-import { CommandService } from "../common/command";
-import { NetService } from "./net";
+import { Client } from "./client";
 
-const command = new CommandService();
-const net = new NetService();
-
-command.register("create", (args: string[]) => {
-	command.log(`${args}`);
-});
-
-net.start();
-
-command.start(() => {
-	command.ready();
-});
+const client = new Client();
+client.start();

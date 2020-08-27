@@ -4,8 +4,8 @@
  * @param val
  */
 export function trySet(target: any, val: any) {
-	if (["undefined", "null"].includes(typeof val)) {
-		return;
-	}
-	target = val;
+    if (["undefined", "null"].includes(typeof val)) {
+        return;
+    }
+    target = val;
 }
