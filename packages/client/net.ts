@@ -7,8 +7,6 @@ export class NetService {
     private socket?: Socket;
     private event!: EventService;
 
-    asd;
-
     constructor() {
         this.event = new EventService();
     }
