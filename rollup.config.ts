@@ -10,12 +10,12 @@ import { DEFAULT_EXTENSIONS } from "@babel/core";
 import pkg from "./package.json";
 
 const servicePaths = {
-    input: path.join(__dirname, "/service/main.ts"),
+    input: path.join(__dirname, "/packages/service/main.ts"),
     output: path.join(__dirname, "/dist"),
 };
 
 const clientPaths = {
-    input: path.join(__dirname, "/client/main.ts"),
+    input: path.join(__dirname, "/packages/client/main.ts"),
     output: path.join(__dirname, "/dist"),
 };
 
@@ -39,8 +39,8 @@ export const serviceConfig: RollupOptions = {
         eslint({
             throwOnError: true, // lint 结果有错误将会抛出异常
             throwOnWarning: true,
-            include: ["service/*.ts", "common/*.ts", "untls/*.ts"],
-            exclude: ["node_modules/**", "dist/service.*", "*.js"],
+            include: ["packages/**/*.ts"],
+            exclude: ["node_modules/**", "dist/**", "*.js"],
         }),
         commonjs(),
         // 配合 commnjs 解析第三方模块
@@ -83,8 +83,8 @@ export const clientConfig: RollupOptions = {
         eslint({
             throwOnError: true, // lint 结果有错误将会抛出异常
             throwOnWarning: true,
-            include: ["client/*.ts", "common/*.ts", "untls/*.ts"],
-            exclude: ["node_modules/**", "dist/client.*", "*.js"],
+            include: ["packages/**/*.ts"],
+            exclude: ["node_modules/**", "dist/**", "*.js"],
         }),
         commonjs(),
         // 配合 commnjs 解析第三方模块

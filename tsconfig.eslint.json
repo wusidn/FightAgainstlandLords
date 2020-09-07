@@ -4,6 +4,6 @@
         "resolveJsonModule": true,
     },
     "include": [
-        "**/*.ts"
+        "packages/**/*.ts"
     ]
 }
