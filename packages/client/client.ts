@@ -26,19 +26,19 @@ export class Client {
         });
     }
 
-    private connectServer(): void {
-        this.net.start("127.0.0.1", 21024, () => {
+    private connectServer(host: string, port: number): void {
+        this.net.start(host, port, () => {
             this.command.log("listener");
         });
     }
 
-    public start(): void {
+    public connect(host: string, port: number): void {
         this.initCommandEvent();
         this.initNetEvent();
 
         this.command.start(() => {
             this.command.log("connecting...");
-            this.connectServer();
+            this.connectServer(host, port);
         });
     }
 }

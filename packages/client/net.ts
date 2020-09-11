@@ -1,6 +1,5 @@
 import { createConnection, Socket } from "net";
 import { EventService, EventFuncType, EventOptions } from "../common/event";
-// import os from "os";
 import net from "net";
 
 export class NetService {

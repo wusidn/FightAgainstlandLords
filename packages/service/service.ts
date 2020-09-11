@@ -50,12 +50,30 @@ export class Service {
         });
     }
 
-    public start(): void {
+    public listener(): void;
+    public listener(port: number): void;
+    public listener(host: string, port: number): void;
+    public listener(param_1?: string | number, param_2?: number): void {
         this.initCommandEvent();
         this.initNetEvent();
 
+        let host: string | undefined = undefined;
+        let port: number | undefined = undefined;
+
+        if (typeof param_1 === "string") {
+            host = param_1;
+        }
+
+        if (typeof param_1 === "number") {
+            port = param_1;
+        }
+
+        if (typeof param_2 === "number") {
+            port = param_2;
+        }
+
         this.command.start(() => {
-            this.net.start((address, port) => {
+            this.net.run(host, port, (address, port) => {
                 this.command.log(`service listened: ${address} ${port}`);
             });
         });

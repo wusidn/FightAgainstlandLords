@@ -1,6 +1,8 @@
 import { createServer, Server, Socket } from "net";
 import * as uuid from "uuid";
-import os from "os";
+
+import { DefaultPort } from "../config";
+import { getLocalAddress } from "../utils";
 
 import { EventService, EventOptions, EventFuncType, Event } from "../common/event";
 
@@ -9,18 +11,58 @@ export interface ClientInfo {
     client: Socket;
 }
 
+type RunCallBackType = (address: string, port: number) => void;
+
 export class NetService {
-    private port!: number;
     private clientList!: Map<string, Socket>;
     private event!: EventService;
 
-    constructor(port?: number) {
-        this.port = port || 21024;
+    constructor() {
         this.clientList = new Map<string, Socket>();
         this.event = new EventService();
     }
 
-    public start(cb?: ((address: string, port: number) => void) | undefined): void {
+    public run(cb?: (address: string, port: number) => void): void;
+    public run(host?: string, cb?: (address: string, port: number) => void): void;
+    public run(port?: number, cb?: (address: string, port: number) => void): void;
+    public run(host?: string, port?: number, cb?: (address: string, port: number) => void): void;
+    public run(param_1?: string | number | RunCallBackType, param_2?: number | RunCallBackType, param_3?: RunCallBackType): void {
+        let host: string | undefined = undefined;
+        let port: number | undefined = undefined;
+        let cb: RunCallBackType | undefined = undefined;
+
+        switch (typeof param_1) {
+            case "string":
+                host = param_1;
+                break;
+            case "number":
+                port = param_1;
+                break;
+            default:
+                cb = param_1;
+                break;
+        }
+
+        switch (typeof param_2) {
+            case "number":
+                port = param_2;
+                break;
+            default:
+                cb = param_2;
+                break;
+        }
+
+        if (typeof param_3 === "function") {
+            cb = param_3;
+        }
+
+        return this._run(host, port, cb);
+    }
+
+    private _run(host?: string, port?: number, cb?: ((address: string, port: number) => void) | undefined): void {
+        host = host || getLocalAddress();
+        port = port || DefaultPort;
+
         process.nextTick(() => {
             const server: Server = createServer((socket: Socket) => {
                 this.listenClient(socket);
@@ -30,10 +72,11 @@ export class NetService {
 
             server.listen(
                 {
-                    port: this.port,
+                    host,
+                    port,
                 },
                 () => {
-                    cb && cb(this.getLocalAddress(), this.port);
+                    cb && cb(host as string, port as number);
                 }
             );
         });
@@ -135,20 +178,5 @@ export class NetService {
             return this.event.removeEventListener(event, param);
         }
         return this.event.removeEventListener(event, param as EventFuncType);
-    }
-
-    private getLocalAddress(family?: "IPv4" | "IPv6"): string {
-        const interfaces = os.networkInterfaces();
-
-        for (const devName in interfaces) {
-            const infos = interfaces[devName] || [];
-            for (const info of infos) {
-                if (info.family == (family || "IPv4") && !info.internal && info.address != "127.0.0.1") {
-                    return info.address;
-                }
-            }
-        }
-
-        return "127.0.0.1";
     }
 }
